@@ -1,0 +1,44 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "memos",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "observability": { "enabled": true },
+
+  "containers": [
+    {
+      "class_name": "MemosContainer",
+      "image": "./Dockerfile",
+      // basic = 1/4 vCPU, 1 GiB RAM, 4 GB ephemeral disk. The DB is restored onto
+      // this disk on every boot, so it must fit (plus WAL headroom) in 4 GB.
+      "instance_type": "basic",
+      // Exactly one writer. Two instances = two Litestream processes writing the
+      // same R2 path = corrupted replica. Never raise this.
+      "max_instances": 1
+    }
+  ],
+
+  "durable_objects": {
+    "bindings": [{ "name": "MEMOS", "class_name": "MemosContainer" }]
+  },
+
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["MemosContainer"] }],
+
+  // Lets you inspect / back up the replica from a Worker or `wrangler r2 object` later.
+  "r2_buckets": [{ "binding": "MEMOS_BACKUP", "bucket_name": "memos-litestream" }],
+
+  "vars": {
+    // Must match bucket_name above. Bucket names are per account, so the default is fine.
+    "R2_BUCKET": "memos-litestream",
+    // Leave "false". The first boot is detected automatically (see src/index.ts).
+    // Set "true" only to deliberately start over with an empty replica, e.g. after
+    // pointing R2_BUCKET at a new, empty bucket. Set it back to "false" afterwards.
+    "LITESTREAM_ALLOW_EMPTY": "false"
+  }
+
+  // Per-deployment settings are secrets, so this file needs no edits:
+  //   npx wrangler secret put R2_ACCOUNT_ID         (required)
+  //   npx wrangler secret put R2_ACCESS_KEY_ID      (required)
+  //   npx wrangler secret put R2_SECRET_ACCESS_KEY  (required)
+  //   npx wrangler secret put MEMOS_INSTANCE_URL    (optional, e.g. https://memos.example.com)
+}

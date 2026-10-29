@@ -1,0 +1,14 @@
+# Litestream v0.5 config. ${VARS} are expanded from the environment at startup;
+# the Durable Object (src/index.ts) injects them from wrangler vars + secrets.
+dbs:
+  - path: /var/opt/memos/memos_prod.db
+    replica:
+      type: s3
+      bucket: ${R2_BUCKET}
+      path: memos
+      endpoint: https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com
+      region: auto
+      access-key-id: ${R2_ACCESS_KEY_ID}
+      secret-access-key: ${R2_SECRET_ACCESS_KEY}
+      # How often WAL changes are shipped to R2 = worst-case data loss on a hard kill.
+      sync-interval: 1s

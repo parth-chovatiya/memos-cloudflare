@@ -1,0 +1,25 @@
+{
+  "name": "memos-cloudflare",
+  "version": "1.0.0",
+  "description": "Self-host Memos on Cloudflare Containers, with SQLite replicated to R2 by Litestream",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "logs": "wrangler tail",
+    "types": "wrangler types",
+    "check": "wrangler types && tsc"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "^0.3.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "wrangler": "^4.0.0"
+  }
+}

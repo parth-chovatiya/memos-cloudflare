@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run check
+      - name: Build container image
+        run: docker build --platform linux/amd64 -t memos-cloudflare .
+      - name: Smoke test image
+        run: docker run --rm --platform linux/amd64 --entrypoint litestream memos-cloudflare version

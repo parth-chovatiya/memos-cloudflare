@@ -1,0 +1,7 @@
+# Copy to .dev.vars for `npm run dev`. Values here override wrangler.jsonc vars.
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+# Use a separate, empty bucket. Never point local dev at your production bucket:
+# two Litestream writers on one replica corrupt it.
+R2_BUCKET=memos-litestream-dev

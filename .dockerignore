@@ -1,0 +1,5 @@
+# Only these files are needed to build the image. Everything else (secrets in
+# .dev.vars, node_modules, git history) stays out of the build context.
+*
+!run.sh
+!litestream.yml
